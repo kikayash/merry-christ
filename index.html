@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1b1442">
+  <title>Merry Christmas</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Reusable drawings (chick + reindeer) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- Piyo the little chick, wearing a Santa hat -->
+      <symbol id="chick" viewBox="0 0 100 100">
+        <path d="M38 88v7M33 95h9M62 88v7M58 95h9" stroke="#ff9f43" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <ellipse cx="50" cy="62" rx="31" ry="28" fill="#ffd84d"/>
+        <ellipse cx="50" cy="71" rx="19" ry="14" fill="#ffe98a" opacity=".75"/>
+        <ellipse cx="20" cy="64" rx="7" ry="12" fill="#f7c531" transform="rotate(20 20 64)"/>
+        <ellipse cx="80" cy="64" rx="7" ry="12" fill="#f7c531" transform="rotate(-20 80 64)"/>
+        <circle cx="39" cy="58" r="3.6" fill="#3a2a4d"/>
+        <circle cx="61" cy="58" r="3.6" fill="#3a2a4d"/>
+        <circle cx="40.3" cy="56.6" r="1.1" fill="#fff"/>
+        <circle cx="62.3" cy="56.6" r="1.1" fill="#fff"/>
+        <ellipse cx="30" cy="67" rx="5" ry="3.3" fill="#ff9ab8" opacity=".8"/>
+        <ellipse cx="70" cy="67" rx="5" ry="3.3" fill="#ff9ab8" opacity=".8"/>
+        <path d="M44.5 63h11L50 70.5z" fill="#ff9f43" stroke="#ff9f43" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M27 41Q38 6 74 18Q66 29 73 41Z" fill="#e0475b"/>
+        <ellipse cx="50" cy="40.5" rx="26" ry="6.5" fill="#fff7ec"/>
+        <circle cx="75" cy="18" r="6" fill="#fff7ec"/>
+      </symbol>
+
+      <!-- A generic reindeer -->
+      <symbol id="deer" viewBox="0 -8 112 92">
+        <g stroke-linecap="round" stroke-linejoin="round">
+          <path d="M28 52v22M40 54v20M68 54v20M80 52v22" stroke="#7a5238" stroke-width="5" fill="none"/>
+          <path d="M24 40q-9-2-11 7" stroke="#a97558" stroke-width="5" fill="none"/>
+          <ellipse cx="54" cy="44" rx="32" ry="17" fill="#a97558"/>
+          <path d="M72 40L84 22" stroke="#a97558" stroke-width="13" fill="none"/>
+          <circle cx="88" cy="20" r="10" fill="#a97558"/>
+          <ellipse cx="97" cy="24" rx="6.5" ry="5" fill="#c99577"/>
+          <circle cx="102" cy="23" r="2.4" fill="#3a2a4d"/>
+          <circle cx="90" cy="17" r="1.9" fill="#3a2a4d"/>
+          <path d="M84 11L78-2M80 4L73 3M89 10L93-2M91 4L97 2" stroke="#7a5238" stroke-width="2.6" fill="none"/>
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- Background scenery -->
+  <div class="sky" aria-hidden="true"></div>
+  <div class="stars" id="stars" aria-hidden="true"></div>
+  <div class="moon" aria-hidden="true"></div>
+  <div class="hills" aria-hidden="true"></div>
+  <canvas id="snow" aria-hidden="true"></canvas>
+
+  <!-- Music on/off -->
+  <button id="soundBtn" class="sound-btn" type="button" aria-label="Turn music off" aria-pressed="true">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+      <line class="slash" x1="3" y1="3" x2="21" y2="21"/>
+    </svg>
+  </button>
+
+  <main id="app">
+
+    <!-- INTRO -->
+    <section id="intro" class="screen active" aria-label="Welcome">
+      <div class="wrap intro-wrap">
+        <div class="intro-chick" data-chick role="button" tabindex="0" aria-label="Piyo the chick">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#chick"/></svg>
+        </div>
+        <h1>Merry Christmas!</h1>
+        <p class="lead">There's a tiny Christmas world waiting for you :p</p>
+        <button id="startBtn" class="btn" type="button">Enter the surprise</button>
+      </div>
+    </section>
+
+    <!-- DECORATE THE TREE -->
+    <section id="decorate" class="screen" aria-label="Decorate the tree" aria-hidden="true">
+      <div class="wrap deco">
+
+        <div class="guide">
+          <button class="guide-chick" type="button" data-chick aria-label="Piyo the chick">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#chick"/></svg>
+          </button>
+          <div class="bubble" id="bubble" role="status" aria-live="polite"><p id="bubbleText"></p></div>
+        </div>
+
+        <div class="tree-wrap" id="treeWrap">
+          <div class="snowmound"></div>
+          <div class="tree-glow"></div>
+          <div class="tree-lean"><div class="tree-idle">
+            <svg class="tree-svg" viewBox="0 0 300 400" role="img" aria-label="A Christmas tree">
+              <defs>
+                <radialGradient id="halo"><stop offset="0" stop-color="#ffd36b" stop-opacity=".75"/><stop offset="1" stop-color="#ffd36b" stop-opacity="0"/></radialGradient>
+              </defs>
+              <rect x="131" y="312" width="38" height="60" rx="7" fill="#8a5a3c"/>
+              <rect x="131" y="312" width="12" height="60" rx="6" fill="#a36e4a" opacity=".55"/>
+              <g stroke-linejoin="round" stroke-width="14">
+                <polygon points="150,168 52,316 248,316" fill="#2d7260" stroke="#2d7260"/>
+                <polygon points="150,102 76,228 224,228" fill="#34806a" stroke="#34806a"/>
+                <polygon points="150,52 104,146 196,146" fill="#3a8c72" stroke="#3a8c72"/>
+              </g>
+              <g id="bulbs"></g>
+              <g transform="translate(150 50)">
+                <g class="star-g" id="treeStar">
+                  <circle r="36" fill="url(#halo)" class="star-halo"/>
+                  <polygon points="0,-21 6,-7 21,-6 10,4 13,19 0,11 -13,19 -10,4 -21,-6 -6,-7" fill="#ffd36b" stroke="#ffb445" stroke-width="2.5" stroke-linejoin="round"/>
+                </g>
+              </g>
+            </svg>
+            <div class="orn-layer" id="ornLayer"></div>
+          </div></div>
+        </div>
+
+        <div class="tray-card" id="trayCard">
+          <div class="tray-body" id="trayBody">
+            <div class="tray-head">
+              <span>Drag or tap to decorate</span>
+              <span class="dots" id="dots" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>
+            </div>
+            <div class="tray" id="tray"></div>
+          </div>
+          <p class="wait" id="waitMsg" hidden>Look up at the sky… someone is flying by!</p>
+          <button id="lightBtn" class="btn" type="button" hidden>Light up the tree!</button>
+          <button id="playBtn" class="btn" type="button" hidden>Catch Santa's gifts :3</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MINI GAME -->
+    <section id="game" class="screen" aria-label="Catch the gifts" aria-hidden="true">
+      <div class="wrap game-wrap">
+        <div class="hud">
+          <span class="pill">Gifts <b id="score">0</b> / <span id="goal">8</span></span>
+          <span class="pill">Time <b id="time">30</b>s</span>
+        </div>
+        <div class="field" id="field">
+          <div class="game-chick" id="gameChick"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#chick"/></svg></div>
+          <div class="overlay" id="overlay">
+            <h2 id="ovTitle"></h2>
+            <p id="ovText"></p>
+            <button id="ovBtn" class="btn" type="button"></button>
+            <button id="ovSkip" class="btn ghost" type="button" hidden>Skip to my message</button>
+          </div>
+        </div>
+        <p class="hint">Drag to move Piyo (← → on a keyboard)</p>
+      </div>
+    </section>
+
+    <!-- FINAL MESSAGE -->
+    <section id="final" class="screen" aria-label="Your message" aria-hidden="true">
+      <div class="wrap final-wrap">
+        <article class="card" id="card">
+          <button class="perch" type="button" data-chick aria-label="Piyo the chick">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#chick"/></svg>
+          </button>
+          <h2 class="card-title">Merry Christmas, <span data-name>Jejee</span>!</h2>
+          <figure class="photo" id="photo" hidden><img id="photoImg" alt="A favorite memory together"></figure>
+          <div class="letter" id="letter"></div>
+          <p class="sign" id="sign"></p>
+          <div class="card-actions">
+            <button id="retryGameBtn" class="btn alt" type="button">Catch more gifts</button>
+            <button id="againBtn" class="btn" type="button">Decorate again</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <span>made with ♡ and a little bit of chaos</span>
+    <span>© 2026 by Kina. All rights reserved.</span>
+  </footer>
+
+  <!-- Santa + reindeer fly-by -->
+  <div id="santa" class="santa" aria-hidden="true">
+    <div class="santa-say"><span data-santa>Ho ho ho! Merry Christmas</span></div>
+    <div class="santa-bob">
+      <svg viewBox="0 0 400 120" width="100%">
+        <!-- reins -->
+        <path d="M184 80Q200 74 216 78M282 78Q290 72 298 74" stroke="#e9c46a" stroke-width="2" fill="none"/>
+        <!-- reindeer -->
+        <use href="#deer" x="196" y="36" width="96" height="79"/>
+        <use href="#deer" x="288" y="32" width="104" height="86"/>
+        <!-- sleigh -->
+        <g transform="translate(8 30)">
+          <path d="M8 76H168Q184 76 184 62" stroke="#e9c46a" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M30 76V64M130 76V64" stroke="#e9c46a" stroke-width="4" stroke-linecap="round"/>
+          <ellipse cx="44" cy="32" rx="24" ry="20" fill="#7b61d9"/>
+          <path d="M38 14q6-8 12 0" stroke="#ffd36b" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <!-- Santa -->
+          <circle cx="108" cy="34" r="20" fill="#e0475b"/>
+          <circle cx="108" cy="16" r="11" fill="#ffd9bd"/>
+          <path d="M98 18Q108 38 118 18Q108 24 98 18Z" fill="#fff"/>
+          <circle cx="104" cy="14" r="1.7" fill="#3a2a4d"/><circle cx="112" cy="14" r="1.7" fill="#3a2a4d"/>
+          <path d="M97 12Q106-14 128 4Q118 6 119 12Z" fill="#e0475b"/>
+          <rect x="96" y="9" width="24" height="6" rx="3" fill="#fff"/>
+          <circle cx="128" cy="4" r="4.5" fill="#fff"/>
+          <!-- sleigh body in front -->
+          <path d="M14 38H150Q158 38 164 30L178 30Q176 60 150 66H34Q14 66 14 38Z" fill="#d94f63"/>
+          <rect x="26" y="55" width="124" height="7" rx="3.5" fill="#b8364b"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <noscript><p style="position:fixed;inset:0;display:grid;place-items:center;color:#fff;background:#1b1442;padding:24px;text-align:center">This little surprise needs JavaScript to work. Please turn it on and reload. 🎄</p></noscript>
+
+  <script src="script.js"></script>
+</body>
+</html>
